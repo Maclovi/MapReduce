@@ -46,7 +46,7 @@ async def subscriber(
 
 
 def map_frequency(chunks: list[str]) -> set[str]:
-    return set(map(sys.intern, chunks))
+    return set(chunks)
 
 
 def reduce_frequency(first: set[str], second: set[str]) -> None:
