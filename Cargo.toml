@@ -1,0 +1,15 @@
+[package]
+name = "mapreduce"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+rand = "0.9.1"
+
+[profile.release]
+debug = false
+lto = "fat"
+panic = "abort"
+opt-level = 3
+codegen-units = 1
+strip = true
