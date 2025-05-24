@@ -1,13 +1,13 @@
 import asyncio
 import concurrent.futures
-import functools
+import os
+import sys
 from collections.abc import Iterator
 from pathlib import Path
-import sys
 from typing import Final, TypeAlias
 
 Queue: TypeAlias = asyncio.Queue[list[str]]
-NUM_WORKERS: Final[int] = 16
+NUM_WORKERS: Final[int] = os.cpu_count() or 8
 
 
 def read_file_in_chunks(filename: str, chunk_size: int) -> Iterator[list[str]]:
@@ -38,9 +38,7 @@ async def subscriber(
     final_result: set[str],
 ) -> None:
     while (chunk := await queue.get()) != ["stop"]:
-        result = await loop.run_in_executor(
-            pool, functools.partial(map_frequency, chunk)
-        )
+        result = await loop.run_in_executor(pool, map_frequency, chunk)
         reduce_frequency(final_result, result)
         queue.task_done()
 
@@ -71,7 +69,7 @@ async def main() -> None:
         async for task in asyncio.as_completed(tasks):
             await task
 
-        print(len(final_result))
+        print(f"unique emails: {len(final_result)}")
 
 
 if __name__ == "__main__":
